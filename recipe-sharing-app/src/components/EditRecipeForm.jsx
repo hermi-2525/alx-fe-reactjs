@@ -1,32 +1,74 @@
-import { useState } from "react";
-import { useRecipeStore } from "./recipeStore";
+// components/EditRecipeForm.jsx
+import { useState } from 'react';
+import useRecipeStore from '../recipeStore';
 
 const EditRecipeForm = ({ recipe }) => {
-  const updateRecipe = useRecipeStore((state) => state.updateRecipe);
-  const [title, setTitle] = useState(recipe.title);
-  const [description, setDescription] = useState(recipe.description);
+  const [formData, setFormData] = useState({
+    title: recipe.title,
+    description: recipe.description,
+    ingredients: recipe.ingredients.join('\n'),
+    instructions: recipe.instructions.join('\n')
+  });
+  
+  const updateRecipe = useRecipeStore(state => state.updateRecipe);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateRecipe({ ...recipe, title, description });
-    alert("Recipe updated!");
+    const updatedRecipe = {
+      title: formData.title,
+      description: formData.description,
+      ingredients: formData.ingredients.split('\n').filter(line => line.trim()),
+      instructions: formData.instructions.split('\n').filter(line => line.trim())
+    };
+    updateRecipe(recipe.id, updatedRecipe);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4">
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="block border p-2 my-2"
-      />
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="block border p-2 my-2"
-      />
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2">
-        Save Changes
-      </button>
+    <form onSubmit={handleSubmit} className="edit-recipe-form">
+      <h2>Edit Recipe</h2>
+      <div>
+        <label>Title:</label>
+        <input
+          type="text"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <label>Description:</label>
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <label>Ingredients (one per line):</label>
+        <textarea
+          name="ingredients"
+          value={formData.ingredients}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <label>Instructions (one per line):</label>
+        <textarea
+          name="instructions"
+          value={formData.instructions}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <button type="submit">Update Recipe</button>
     </form>
   );
 };
