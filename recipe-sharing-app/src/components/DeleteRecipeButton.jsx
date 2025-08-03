@@ -1,5 +1,6 @@
 // components/DeleteRecipeButton.jsx
 import useRecipeStore from '../recipeStore';
+import PropTypes from 'prop-types'; // Added for prop validation
 
 const DeleteRecipeButton = ({ recipeId, onDelete }) => {
   const deleteRecipe = useRecipeStore(state => state.deleteRecipe);
@@ -16,6 +17,12 @@ const DeleteRecipeButton = ({ recipeId, onDelete }) => {
       Delete Recipe
     </button>
   );
+};
+
+// Added prop type validation
+DeleteRecipeButton.propTypes = {
+  recipeId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  onDelete: PropTypes.func
 };
 
 export default DeleteRecipeButton;
